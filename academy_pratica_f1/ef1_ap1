@@ -1,0 +1,67 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+const Color red = Color.fromARGB(255, 18, 32, 47);
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: red,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: MyWidget(),
+        ),
+      ),
+    );
+  }
+}
+
+class MyWidget extends StatefulWidget {
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  Color corDoTexto = Colors.white;
+
+  void trocaCor() {
+    setState(() {
+      final random = Random();
+      corDoTexto = Color.fromARGB(
+        255,
+        random.nextInt(256),
+        random.nextInt(256),
+        random.nextInt(256),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      child: (
+        Text(
+          'Hello World',
+          style: TextStyle(
+            color: corDoTexto,
+            fontSize: 24,
+          ),
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: trocaCor,
+          child: Text('Sortear cor'),
+        ),
+      ),
+    );
+  }
+}

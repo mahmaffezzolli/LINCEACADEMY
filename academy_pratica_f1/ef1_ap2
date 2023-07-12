@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+const Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: darkBlue,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: MyWidget(),
+        ),
+      ),
+    );
+  }
+}
+
+class MyWidget extends StatefulWidget {
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  final random = Random();
+  var botaoCerto = 0;
+  var clicks = 0;
+  var venceu = false;
+  var perdeu = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    botaoCerto = random.nextInt(3);
+  }
+
+  void tentativa(int opcao) {
+    setState(() {
+      if (opcao == botaoCerto) {
+        venceu = true;
+      } else {
+        clicks++;
+      }
+
+      if (clicks >= 2 && !venceu) {
+        perdeu = true;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (venceu) {
+      return Container(
+          color: Colors.green,
+          child: Center(
+              child: const Text(
+            "Você venceu!",
+            style: TextStyle(fontSize: 40, color: Colors.black),
+          )));
+    }
+
+    if (perdeu) {
+      return Container(
+          color: Colors.red,
+          child: Center(
+              child: const Text(
+            "Você perdeu!",
+            style: TextStyle(fontSize: 40, color: Colors.black),
+          )));
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          child: const Text("A"),
+          onPressed: () {
+            tentativa(0);
+          },
+        ),
+        ElevatedButton(
+          child: const Text("B"),
+          onPressed: () {
+            tentativa(1);
+          },
+        ),
+        ElevatedButton(
+          child: const Text("C"),
+          onPressed: () {
+            tentativa(2);
+          },
+        ),
+      ],
+    );
+  }
+}

@@ -1,0 +1,180 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+const Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+
+enum EstadoJogador {
+  Vitoria,
+  Derrota,
+  Jogando,
+}
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: darkBlue,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: darkBlue,
+          child: Center(
+            child: MyWidget(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MyWidget extends StatefulWidget {
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  final random = Random();
+
+  var botaoCorreto = 0;
+  var clicks = 0;
+  var estadoJogador = EstadoJogador.Jogando;
+  var contVitorias = 0;
+  var contDerrotas = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    reiniciarJogo();
+  }
+
+  void reiniciarJogo() {
+    setState(() {
+      botaoCorreto = random.nextInt(3);
+      clicks = 0;
+      estadoJogador = EstadoJogador.Jogando;
+    });
+  }
+
+  void tentativa(int opcao) {
+    setState(() {
+      if (opcao == botaoCorreto) {
+        estadoJogador = EstadoJogador.Vitoria;
+        contVitorias++;
+      } else {
+        clicks++;
+        if (clicks >= 2) {
+          estadoJogador = EstadoJogador.Derrota;
+          contDerrotas++;
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget conteudoWidget;
+    Color corDeFundo;
+
+    switch (estadoJogador) {
+      case EstadoJogador.Vitoria:
+        conteudoWidget = Container(
+          color: Colors.green,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Você venceu!',
+                style: TextStyle(fontSize: 40, color: Colors.black),
+              ),
+              ElevatedButton(
+                onPressed: reiniciarJogo,
+                child: const Text('Reiniciar'),
+                style: ElevatedButton.styleFrom(
+                  primary: Color.fromARGB(94, 166, 249, 252),
+                ),
+              ),
+            ],
+          ),
+        );
+        corDeFundo = Colors.green;
+        break;
+      case EstadoJogador.Derrota:
+        conteudoWidget = Container(
+          color: Colors.red.shade400,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Você perdeu!',
+                style: TextStyle(
+                    fontSize: 40, color: Color.fromARGB(255, 75, 16, 75)),
+              ),
+              ElevatedButton(
+                onPressed: reiniciarJogo,
+                child: const Text('Reiniciar'),
+                style: ElevatedButton.styleFrom(
+                  primary: Color.fromARGB(255, 255, 174, 127),
+                ),
+              ),
+            ],
+          ),
+        );
+        corDeFundo = Colors.red.shade400;
+        break;
+      case EstadoJogador.Jogando:
+        conteudoWidget = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              child: const Text('A'),
+              onPressed: () {
+                tentativa(0);
+              },
+            ),
+            ElevatedButton(
+              child: const Text('B'),
+              onPressed: () {
+                tentativa(1);
+              },
+            ),
+            ElevatedButton(
+              child: const Text('C'),
+              onPressed: () {
+                tentativa(2);
+              },
+            ),
+          ],
+        );
+        corDeFundo = darkBlue;
+        break;
+    }
+
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: corDeFundo,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          conteudoWidget,
+          Text(
+            'Vitórias: $contVitorias',
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+          Text(
+            'Derrotas: $contDerrotas',
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}
