@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+const Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: darkBlue,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: MyWidget(),
+        ),
+      ),
+    );
+  }
+}
+
+class MyWidget extends StatefulWidget {
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  final random = Random();
+
+  var quadrado = true;
+  var cor = Colors.red;
+
+  String get textoBotao =>
+      quadrado ? "Mudar para círculo" : "Mudar para quadrado";
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: ElevatedButton(
+                  child: Text(textoBotao),
+                  onPressed: () {
+                    setState(() {
+                      quadrado = !quadrado;
+                    });
+                  },
+                ),
+              ),
+              ElevatedButton(
+                child: Text("Cor aleatória"),
+                onPressed: () {
+                  setState(() {
+                    switch (random.nextInt(5)) {
+                      case 0:
+                        print("Vermelho");
+                        cor = Colors.red;
+                        break;
+                      case 1:
+                        print("Azul");
+                        cor = Colors.blue;
+                        break;
+                      case 2:
+                        print("Laranja");
+                        cor = Colors.orange;
+                        break;
+                      case 3:
+                        print("Verde");
+                        cor = Colors.green;
+                        break;
+                      case 4:
+                        print("Cinza");
+                        cor = Colors.grey;
+                        break;
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: quadrado ? BoxShape.rectangle : BoxShape.circle,
+                    color: cor,
+                  ),
+                  width: 50,
+                  height: 50,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
