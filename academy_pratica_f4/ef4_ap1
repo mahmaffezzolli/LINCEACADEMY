@@ -1,0 +1,87 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      initialRoute: "/Tela1",
+      routes: {
+        "/Tela1": (context) => Tela1(),
+        "/Tela2": (context) =>
+            RotaCores(ModalRoute.of(context)!.settings.arguments as Cores),
+      },
+    );
+  }
+}
+
+class Cores {
+  final String texto;
+  final Color cor;
+
+  const Cores(this.texto, this.cor);
+}
+
+class Tela1 extends StatelessWidget {
+  const Tela1({Key? key});
+
+  final List<Cores> cores = const [
+    Cores("Preto", Color.fromARGB(255, 39, 39, 39)),
+    Cores("Cinza", Colors.grey),
+    Cores("Branco", Colors.white),
+    Cores("Vermelho", Colors.red),
+    Cores("Laranja", Colors.orange),
+    Cores("Amarelo", Colors.yellow),
+    Cores("Verde", Colors.green),
+    Cores("Azul", Colors.blue),
+    Cores("Ciano", Colors.cyan),
+    Cores("Roxo", Colors.purple),
+    Cores("Rosa", Colors.pink),
+    Cores("Marrom", Colors.brown),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("List view"),
+      ),
+      body: ListView.builder(
+        itemCount: cores.length,
+        itemBuilder: (context, indice) {
+          final item = cores[indice];
+          return ListTile(
+            title: Text(item.texto),
+            tileColor: item.cor,
+            onTap: () {
+              Navigator.pushNamed(context, "/Tela2", arguments: item);
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class RotaCores extends StatelessWidget {
+  final Cores color;
+
+  const RotaCores(this.color);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Cor selecionada"),
+      ),
+      body: Container(
+        color: color.cor,
+      ),
+    );
+  }
+}
