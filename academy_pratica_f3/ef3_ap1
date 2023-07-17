@@ -1,0 +1,175 @@
+import 'package:flutter/material.dart';
+
+const Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: darkBlue,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: MyWidget(),
+        ),
+      ),
+    );
+  }
+}
+
+class MyWidget extends StatefulWidget {
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  final _formKey = GlobalKey<FormState>();
+  final _nome = TextEditingController();
+  final _idade = TextEditingController();
+
+  var _inativo = true;
+  String? _salvaNome;
+  int? _salvaIdade;
+  bool? _salvaInativo;
+
+  bool get _salvaForm {
+    return _salvaIdade != null && _salvaNome != null && _salvaInativo != null;
+  }
+
+  void _enviarFormulario() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _salvaNome = _nome.text;
+        _salvaIdade = int.tryParse(_idade.text);
+        _salvaInativo = _inativo;
+      });
+    } else {
+      print("Formulário inválido");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(
+              title: Center(
+                child: Text("Cadastro"),
+              ),
+            ),
+            body: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFormField(
+                      controller: _nome,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        label: Text("Nome"),
+                      ),
+                      validator: (name) {
+                        if (name?.isEmpty ?? true) {
+                          return "Nome obrigatório";
+                        }
+                        if (name!.length < 3) {
+                          return "Nome precisa ter no mínimo três letras";
+                        }
+                        if (name.startsWith(RegExp(r'[^A-Z]'))) {
+                          return "Nome precisa começar com letra maiuscula";
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _idade,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        label: Text("Idade"),
+                      ),
+                      validator: (age) {
+                        if (age?.isEmpty ?? true) {
+                          return "Idade obrigatória";
+                        }
+                        final idade = int.tryParse(_idade.text) ?? 0;
+                        if (idade < 18) {
+                          return "Idade inválida";
+                        }
+                        return null;
+                      },
+                    ),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _inativo,
+                          onChanged: (value) {
+                            setState(() {
+                              _inativo = value!;
+                            });
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(_inativo ? "Inativo" : "Ativo"),
+                        ),
+                      ],
+                    ),
+                    ElevatedButton(
+                      child: const Text("Salvar"),
+                      onPressed: () {
+                        _enviarFormulario();
+                      },
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(3),
+                      child: Text("Seus dados:"),
+                    ),
+                    if (_salvaForm)
+                      salvos(
+                        idade: _salvaIdade!,
+                        nome: _salvaNome!,
+                        inativo: _salvaInativo!,
+                      ),
+                  ],
+                ),
+              ),
+            )));
+  }
+}
+
+class salvos extends StatelessWidget {
+  const salvos(
+      {required this.nome, required this.idade, required this.inativo});
+
+  final int idade;
+  final String nome;
+  final bool inativo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: inativo ? Colors.grey : Colors.green,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text("Nome: $nome"),
+          Text("Idade: $idade"),
+          Text(inativo ? "Inativo" : "Ativo"),
+        ],
+      ),
+    );
+  }
+}
