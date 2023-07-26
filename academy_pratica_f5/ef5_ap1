@@ -1,0 +1,155 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Future<List<ImagemUrl>> _getImagens() async {
+    Uri uri = Uri.parse(
+        "https://raw.githubusercontent.com/LinceTech/dart-workshops/main/flutter-async/ap_1/request.json");
+
+    var response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body) as List;
+      List<ImagemUrl> produtos =
+          jsonData.map<ImagemUrl>((json) => ImagemUrl.fromJson(json)).toList();
+      return produtos;
+    } else {
+      throw Exception("Erro na requisição http (cod.: ${response.statusCode})");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text("Lista De Imagens")),
+        body: FutureBuilder<List<ImagemUrl>>(
+          future: _getImagens(),
+          builder: (BuildContext context, AsyncSnapshot<List<ImagemUrl>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError || snapshot.data == null) {
+              return Center(
+                child: Text("Erro ao carregar os dados."),
+              );
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        leading: AspectRatio(
+                          aspectRatio: 1,
+                          child: Image.network(
+                            snapshot.data![index].thumbnailUrl,
+                            fit: BoxFit.cover,
+                            height: 100,
+                          ),
+                        ),
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("${snapshot.data![index].title}"),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return Detalhes(
+                                  imageUrl: snapshot.data![index].url,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      Divider( 
+                        color: Colors.black, 
+                        thickness: 1.0, // Defina a espessura do Divider
+                        height: 2.0, // Defina a altura do Divider
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+//imagem----------------------------------------------------------------------
+class ImagemUrl {
+  final int imagemid;
+  final String title;
+  final String url;
+  final String thumbnailUrl;
+
+  ImagemUrl(this.imagemid, this.title, this.url, this.thumbnailUrl);
+
+  factory ImagemUrl.fromJson(Map<String, dynamic> json) {
+    return ImagemUrl(
+      json["id"],
+      json["title"],
+      json["url"],
+      json["thumbnailUrl"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "id": this.imagemid,
+        "title": this.title,
+        "url": this.url,
+        "thumbnailUrl": this.thumbnailUrl,
+      };
+}
+//imagem----------------------------------------------------------------------
+
+
+//detalhes----------------------------------------------------------------------
+class Detalhes extends StatelessWidget {
+  final String? imageUrl;
+
+  const Detalhes({
+    Key? key,
+    this.imageUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Detalhes da Imagem") ,backgroundColor: Colors.black,),
+       backgroundColor: Colors.grey, 
+      body: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black, width: 2),
+          ),
+          child: Image.network(
+            imageUrl!,
+          ),
+        ),
+      ),
+    );
+  }
+}
+//detalhes----------------------------------------------------------------------
+
