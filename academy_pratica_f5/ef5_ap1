@@ -82,8 +82,8 @@ class _MyAppState extends State<MyApp> {
                       ),
                       Divider( 
                         color: Colors.black, 
-                        thickness: 1.0, // Defina a espessura do Divider
-                        height: 2.0, // Defina a altura do Divider
+                        thickness: 1.0, // Define a espessura do Divider
+                        height: 2.0, // Define a altura do Divider
                       ),
                     ],
                   );
